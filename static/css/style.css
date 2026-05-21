@@ -824,3 +824,49 @@ body.reduced-motion * {
         font-size: 18px;
     }
 }
+
+/* Footer Styles */
+.app-footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 20px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+}
+
+.powered-by {
+    font-size: 12px;
+    color: var(--text-light);
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+.eventflow {
+    font-weight: 600;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: 0.5px;
+}
+
+/* Dark mode adjustment */
+@media (prefers-color-scheme: dark) {
+    .eventflow {
+        background: linear-gradient(135deg, #818CF8, #A78BFA);
+        -webkit-background-clip: text;
+        background-clip: text;
+    }
+}
+
+/* Mobile adjustment */
+@media (max-width: 480px) {
+    .app-footer {
+        padding: 16px;
+        margin-top: 16px;
+    }
+    
+    .powered-by {
+        font-size: 10px;
+    }
+}
