@@ -366,4 +366,10 @@ def calculate_duration(start, end):
         return "Invalid dates"
 
 if __name__ == '__main__':
+    # For local development
     app.run(debug=True, host='127.0.0.1', port=5000)
+else:
+    # For production (Render)
+    # Use a proper secret key from environment variable
+    import os
+    app.secret_key = os.environ.get('SECRET_KEY', 'leavemail-secret-key-change-in-production')
