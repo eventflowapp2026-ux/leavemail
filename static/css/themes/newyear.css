@@ -1,0 +1,14 @@
+/* New Year theme */
+:root {
+    --primary: #7C4DFF;
+    --primary-dark: #651FFF;
+    --background: #E8EAF6;
+    --surface: #FFFFFF;
+    --text: #1A237E;
+    --text-light: #3949AB;
+    --border: #C5CAE9;
+}
+
+body {
+    background: linear-gradient(135deg, #E8EAF6 0%, #C5CAE9 100%);
+}

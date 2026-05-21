@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>⚙️ Settings</h1>
+    <p class="subtitle">Configure your preferences</p>
+</div>
+
+<form id="settingsForm" class="settings-form">
+    <section class="settings-section">
+        <h2>👤 Student Information</h2>
+        <div class="form-group">
+            <label>Student Name</label>
+            <input type="text" id="studentName" class="form-input" placeholder="Full name">
+        </div>
+        <div class="form-group">
+            <label>Class / Grade</label>
+            <input type="text" id="studentClass" class="form-input" placeholder="e.g., 5th Grade, Class 10A">
+        </div>
+    </section>
+    
+    <section class="settings-section">
+        <h2>👪 Parent/Guardian Information</h2>
+        <div class="form-group">
+            <label>Parent Name</label>
+            <input type="text" id="parentName" class="form-input" placeholder="Your name">
+        </div>
+        <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" id="parentPhone" class="form-input" placeholder="Emergency contact">
+        </div>
+    </section>
+    
+    <section class="settings-section">
+        <h2>📧 Email Settings</h2>
+        <div class="form-group">
+            <label>Recipient Name</label>
+            <input type="text" id="recipientName" class="form-input" placeholder="e.g., Class Teacher, Principal">
+        </div>
+        <div class="form-group">
+            <label>Recipient Email</label>
+            <input type="email" id="recipientEmail" class="form-input" placeholder="teacher@school.edu">
+        </div>
+    </section>
+    
+    <section class="settings-section">
+        <h2>📝 Message Templates</h2>
+        {% for key, template in templates.items() %}
+        <div class="template-editor">
+            <label>{{ key|capitalize }} Template</label>
+            <textarea id="template_{{ key }}" class="form-input template-text" rows="4">{{ template }}</textarea>
+            <button type="button" class="btn-reset-template" data-template="{{ key }}">Reset to default</button>
+        </div>
+        {% endfor %}
+    </section>
+    
+    <!-- Add this section after the Message Templates section in settings.html -->
+
+<section class="settings-section">
+    <h2>🎨 Email Theme</h2>
+    <div class="form-group">
+        <label>Email Visual Style</label>
+        <select id="emailTheme" class="form-input">
+            <option value="default">📧 Default</option>
+            <option value="modern">✨ Modern</option>
+            <option value="elegant">🖋️ Elegant</option>
+            <option value="colorful">🌈 Colorful</option>
+            <option value="minimal">⬜ Minimal</option>
+            <option value="festive">🎉 Festive</option>
+        </select>
+        <small>This changes how the email looks when received</small>
+    </div>
+    <div id="emailThemePreview" class="email-theme-preview">
+        <strong>Preview:</strong> This is how bold text will appear
+    </div>
+</section>
+    
+    <section class="settings-section">
+        <h2>🎨 Appearance</h2>
+        <div class="form-group">
+            <label>Theme</label>
+            <select id="themeSelect" class="form-input">
+                {% for key, theme in themes.items() %}
+                <option value="{{ key }}">{{ theme.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="accessibility-options">
+            <label>Accessibility</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" id="highContrast"> 🌓 High Contrast</label>
+                <label><input type="checkbox" id="largeText"> 🔍 Large Text</label>
+                <label><input type="checkbox" id="reducedMotion"> 🎬 Reduced Motion</label>
+            </div>
+        </div>
+    </section>
+    
+    <section class="settings-section">
+    <h2>🔒 Security Settings</h2>
+    
+    <div class="form-group">
+        <label>Lock Type</label>
+        <select id="lockType" class="form-input">
+            <option value="none">🚫 No Lock</option>
+            <option value="pin">🔢 PIN Lock (4-6 digits)</option>
+            <option value="password">🔐 Password Lock</option>
+            <option value="pattern">🎨 Pattern Lock</option>
+        </select>
+        <small>Require authentication before sending emails</small>
+    </div>
+    
+    <!-- PIN Section -->
+    <div id="pinSection" class="security-section" style="display: none;">
+        <div class="form-group">
+            <label>Set PIN (4-6 digits)</label>
+            <input type="password" id="pinCode" class="form-input" maxlength="6" pattern="[0-9]*" inputmode="numeric" placeholder="Enter PIN">
+            <input type="password" id="pinConfirm" class="form-input" maxlength="6" pattern="[0-9]*" inputmode="numeric" placeholder="Confirm PIN" style="margin-top: 8px;">
+        </div>
+    </div>
+    
+    <!-- Password Section -->
+    <div id="passwordSection" class="security-section" style="display: none;">
+        <div class="form-group">
+            <label>Set Password</label>
+            <input type="password" id="password" class="form-input" placeholder="Enter password (min 4 characters)">
+            <input type="password" id="passwordConfirm" class="form-input" placeholder="Confirm password" style="margin-top: 8px;">
+            <small>Use letters, numbers, or symbols</small>
+        </div>
+    </div>
+    
+    <!-- Pattern Section -->
+    <div id="patternSection" class="security-section" style="display: none;">
+        <label>Draw Pattern Lock</label>
+        <div class="pattern-container">
+            <div class="pattern-grid" id="patternGrid">
+                <!-- 3x3 pattern grid will be generated by JS -->
+            </div>
+        </div>
+        <div id="patternStatus" class="pattern-status">Draw a pattern (minimum 4 dots)</div>
+        <button type="button" id="resetPatternBtn" class="btn-small btn-secondary" style="margin-top: 8px;">Reset Pattern</button>
+        <input type="hidden" id="patternValue" value="">
+    </div>
+    
+    <div class="security-note" style="margin-top: 12px; padding: 8px; background: #FFF3CD; border-radius: 8px; font-size: 12px;">
+        ⚠️ <strong>Note:</strong> Security is stored locally on your device. If you forget your lock, you'll need to clear browser data to reset.
+    </div>
+</section>
+    
+    <div class="action-buttons">
+        <button type="submit" class="btn btn-primary">💾 Save All Settings</button>
+        <button type="button" id="resetBtn" class="btn btn-secondary">⟳ Reset to Defaults</button>
+    </div>
+</form>
+{% endblock %}

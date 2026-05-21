@@ -1,0 +1,14 @@
+/* Default theme */
+:root {
+    --primary: #4F46E5;
+    --primary-dark: #4338CA;
+    --background: #F9FAFB;
+    --surface: #FFFFFF;
+    --text: #111827;
+    --text-light: #6B7280;
+    --border: #E5E7EB;
+}
+
+body {
+    background: var(--background);
+}

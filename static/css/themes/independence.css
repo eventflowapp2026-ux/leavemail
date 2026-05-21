@@ -1,0 +1,15 @@
+/* Independence Day theme - India */
+:root {
+    --primary: #FF9933;
+    --primary-dark: #FF8000;
+    --background: #F5F5F5;
+    --surface: #FFFFFF;
+    --text: #138808;
+    --text-light: #1B8C1B;
+    --border: #FFCC80;
+}
+
+body {
+    background: linear-gradient(135deg, #FF9933 0%, #FFFFFF 50%, #138808 100%);
+    background-attachment: fixed;
+}

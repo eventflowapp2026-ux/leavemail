@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Send Leave Request{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Request Leave</h1>
+    <p class="subtitle">Fill in the details below</p>
+</div>
+
+<form id="leaveForm" class="leave-form">
+    <div class="form-group">
+        <label>📅 Start Date & Time</label>
+        <input type="datetime-local" id="startDatetime" class="form-input" required>
+    </div>
+    
+    <div class="form-group">
+        <label>📅 End Date & Time</label>
+        <input type="datetime-local" id="endDatetime" class="form-input" required>
+    </div>
+    
+    <div class="duration-display" id="durationDisplay">
+        ⏱️ Duration: Not selected
+    </div>
+    
+    <div class="form-group">
+        <label>📝 Reason (optional)</label>
+        <div class="input-with-voice">
+            <textarea id="reason" class="form-input" rows="3" placeholder="e.g., Fever, family function, medical appointment..."></textarea>
+            <button type="button" id="voiceBtn" class="voice-btn" title="Voice input">🎤</button>
+        </div>
+    </div>
+    
+    <div class="quick-presets">
+        <span class="preset-label">Quick presets:</span>
+        <div class="preset-buttons">
+            <button type="button" class="preset-btn" data-reason="🤒 Fever / Sick leave">🤒 Sick</button>
+            <button type="button" class="preset-btn" data-reason="👨‍👩‍👧 Family function / event">👨‍👩‍👧 Family</button>
+            <button type="button" class="preset-btn" data-reason="🚨 Emergency - Need immediate leave">🚨 Emergency</button>
+            <button type="button" class="preset-btn" data-reason="🏥 Medical appointment scheduled">🏥 Medical</button>
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label>🎨 Template Style</label>
+        <div class="template-buttons">
+            <button type="button" class="template-btn" data-template="professional">💼 Professional</button>
+            <button type="button" class="template-btn" data-template="casual">😊 Casual</button>
+            <button type="button" class="template-btn" data-template="entertaining">🎭 Entertaining</button>
+            <button type="button" class="template-btn" data-template="custom">✏️ Custom</button>
+        </div>
+        <input type="hidden" id="selectedTemplate" value="professional">
+    </div>
+    
+    <div class="form-group" id="customTemplateGroup" style="display: none;">
+        <label>Custom Template</label>
+        <textarea id="customTemplate" class="form-input" rows="4" placeholder="Write your custom template here... Use {student_name}, {reason}, etc."></textarea>
+        <small>Available: {student_name}, {start_datetime}, {end_datetime}, {reason}, {parent_name}, {recipient_name}</small>
+    </div>
+    
+    <div class="attachment-info" style="background: #EFF6FF; padding: 12px; border-radius: 12px; margin-bottom: 16px;">
+        <p style="margin: 0; font-size: 14px;">
+            📎 <strong>Need to attach a file?</strong><br>
+            <small>Medical certificates, doctor's notes, or permission letters can be attached AFTER clicking "Send Email":</small>
+        </p>
+        <ol style="margin: 8px 0 0 20px; font-size: 13px;">
+            <li>Click "Send Email" below</li>
+            <li>Your email client will open</li>
+            <li>Look for the 📎 attachment icon</li>
+            <li>Select your file and send</li>
+        </ol>
+    </div>
+    
+    <div class="email-preview" id="emailPreview" style="display: none;">
+        <h3>📧 Email Preview</h3>
+        <div class="preview-subject" id="previewSubject"></div>
+        <div class="preview-body" id="previewBody"></div>
+    </div>
+    
+    <div class="action-buttons">
+        <button type="button" id="previewBtn" class="btn btn-secondary">👁️ Preview</button>
+        <button type="submit" id="sendBtn" class="btn btn-primary">✉️ Send Email</button>
+    </div>
+    
+    <button type="button" id="quickSendBtn" class="btn btn-emergency">⚡ QUICK SEND</button>
+</form>
+
+<!-- Security PIN Modal -->
+<div id="pinModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h3>🔐 Enter PIN</h3>
+        <input type="password" id="pinInput" class="form-input" maxlength="6" pattern="[0-9]*" inputmode="numeric">
+        <div class="modal-buttons">
+            <button id="pinSubmitBtn" class="btn btn-primary">Submit</button>
+            <button id="pinCancelBtn" class="btn btn-secondary">Cancel</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

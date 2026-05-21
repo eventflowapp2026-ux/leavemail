@@ -1,0 +1,18 @@
+/* Christmas theme */
+:root {
+    --primary: #D32F2F;
+    --primary-dark: #B71C1C;
+    --background: #FFF8F0;
+    --surface: #FFFFFF;
+    --text: #2E7D32;
+    --text-light: #558B2F;
+    --border: #FFCCBC;
+}
+
+body {
+    background: linear-gradient(135deg, #FFF8F0 0%, #FFE0B2 100%);
+}
+
+.app-container {
+    background: rgba(255, 255, 255, 0.95);
+}

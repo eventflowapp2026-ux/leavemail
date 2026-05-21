@@ -1,0 +1,14 @@
+/* Onam theme */
+:root {
+    --primary: #F9A825;
+    --primary-dark: #F57F17;
+    --background: #FFFDE7;
+    --surface: #FFFFFF;
+    --text: #33691E;
+    --text-light: #689F38;
+    --border: #FFE082;
+}
+
+body {
+    background: linear-gradient(135deg, #FFFDE7 0%, #F9FBE7 100%);
+}
