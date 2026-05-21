@@ -6,8 +6,16 @@ import os
 from functools import wraps
 from urllib.parse import quote
 
-app = Flask(__name__)
-app.secret_key = 'leavemail-secret-key-change-in-production'
+# Fix for Render deployment - ensure templates and static folders are found
+basedir = os.path.dirname(os.path.abspath(__file__))
+
+app = Flask(__name__,
+    template_folder=os.path.join(basedir, 'templates'),
+    static_folder=os.path.join(basedir, 'static')
+)
+
+# Use environment variable for secret key in production
+app.secret_key = os.environ.get('SECRET_KEY', 'leavemail-secret-key-change-in-production')
 
 # Default templates with HTML formatting
 DEFAULT_TEMPLATES = {
@@ -108,7 +116,6 @@ def format_datetime(dt_string):
     if not dt_string:
         return "Not specified"
     try:
-        # Handle both formats with and without microseconds
         dt_string = dt_string.replace('Z', '')
         if 'T' in dt_string:
             dt = datetime.datetime.fromisoformat(dt_string)
@@ -134,14 +141,12 @@ def history():
 
 @app.route('/api/save-settings', methods=['POST'])
 def save_settings():
-    """Save user settings to session"""
     data = request.json
     session['settings'] = data
     return jsonify({'status': 'success', 'message': 'Settings saved'})
 
 @app.route('/api/get-settings', methods=['GET'])
 def get_settings():
-    """Retrieve user settings"""
     settings = session.get('settings', {
         'student_name': '',
         'student_class': '',
@@ -168,34 +173,27 @@ def get_settings():
 
 @app.route('/api/generate-email', methods=['POST'])
 def generate_email():
-    """Generate email from template and form data"""
     data = request.json
     
-    # Get template and email theme
     template_type = data.get('template_type', 'professional')
     custom_template = data.get('custom_template', '')
     email_theme = data.get('email_theme', 'default')
     
-    # Use custom template if provided
     if template_type == 'custom' and custom_template:
         template = custom_template
     else:
         templates = session.get('settings', {}).get('templates', DEFAULT_TEMPLATES)
         template = templates.get(template_type, DEFAULT_TEMPLATES['professional'])
     
-    # Get email theme CSS
     theme_css = EMAIL_THEMES.get(email_theme, EMAIL_THEMES['default'])['css']
     
-    # Format dates nicely (remove T)
     start_raw = data.get('start_datetime', '')
     end_raw = data.get('end_datetime', '')
     start_formatted = format_datetime(start_raw)
     end_formatted = format_datetime(end_raw)
     
-    # Calculate duration
     duration = calculate_duration(start_raw, end_raw)
     
-    # Prepare placeholders
     placeholders = {
         'student_name': data.get('student_name', ''),
         'student_class': data.get('student_class', ''),
@@ -210,12 +208,10 @@ def generate_email():
         'day_of_week': datetime.datetime.now().strftime('%A')
     }
     
-    # Replace placeholders
     email_body_html = template
     for key, value in placeholders.items():
         email_body_html = email_body_html.replace(f'{{{key}}}', str(value))
     
-    # Wrap with theme CSS
     full_email_html = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -227,38 +223,26 @@ def generate_email():
             margin: 0 auto;
             padding: 20px;
         }}
-        .attachment-note {{
-            background: #f0f0f0;
-            padding: 10px;
-            margin-top: 20px;
-            border-radius: 8px;
-            font-size: 12px;
-            text-align: center;
-        }}
     </style>
 </head>
 <body>
     <div class="email-container">
-        {email_body_html}</div>
+        {email_body_html}
+    </div>
 </body>
 </html>"""
     
-    # Create plain text version
     plain_text_body = email_body_html.replace('<br>', '\n').replace('</p>', '\n\n')
     plain_text_body = plain_text_body.replace('<p>', '').replace('</p>', '')
     plain_text_body = plain_text_body.replace('<strong>', '').replace('</strong>', '')
-    plain_text_body = plain_text_body.replace('<div', '').replace('</div>', '')
     plain_text_body = re.sub(r'<[^>]+>', '', plain_text_body)
     plain_text_body = plain_text_body.strip()
     
-    # Prepare email subject
     subject = f"Leave Request - {placeholders['student_name']} - {start_formatted[:20] if start_formatted else 'Upcoming'}"
     
-    # Prepare mailto link (using plain text for compatibility)
     recipient = data.get('recipient_email', '')
     mailto_link = f"mailto:{recipient}?subject={quote(subject)}&body={quote(plain_text_body)}"
     
-    # Save to history
     history_entry = {
         'id': datetime.datetime.now().timestamp(),
         'timestamp': datetime.datetime.now().isoformat(),
@@ -288,19 +272,16 @@ def generate_email():
 
 @app.route('/api/get-history', methods=['GET'])
 def get_history():
-    """Retrieve leave history"""
     history = session.get('history', [])
     return jsonify(history)
 
 @app.route('/api/clear-history', methods=['POST'])
 def clear_history():
-    """Clear leave history"""
     session['history'] = []
     return jsonify({'status': 'success'})
 
 @app.route('/api/voice-input', methods=['POST'])
 def voice_input():
-    """Process voice input and extract leave information"""
     data = request.json
     transcript = data.get('transcript', '').lower()
     
@@ -311,7 +292,6 @@ def voice_input():
         'confidence': 'low'
     }
     
-    # Keyword extraction
     if 'fever' in transcript or 'sick' in transcript or 'ill' in transcript:
         extracted['reason'] = '🤒 Sick leave - Medical condition'
         extracted['confidence'] = 'high'
@@ -330,7 +310,6 @@ def voice_input():
     else:
         extracted['reason'] = transcript
     
-    # Parse time references
     if 'tomorrow' in transcript:
         extracted['start_offset'] = 1
     elif 'day after' in transcript:
@@ -346,7 +325,6 @@ def voice_input():
     return jsonify(extracted)
 
 def calculate_duration(start, end):
-    """Calculate duration between two datetime strings"""
     if not start or not end:
         return "Not specified"
     
@@ -366,10 +344,4 @@ def calculate_duration(start, end):
         return "Invalid dates"
 
 if __name__ == '__main__':
-    # For local development
-    app.run(debug=True, host='127.0.0.1', port=5000)
-else:
-    # For production (Render)
-    # Use a proper secret key from environment variable
-    import os
-    app.secret_key = os.environ.get('SECRET_KEY', 'leavemail-secret-key-change-in-production')
+    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
