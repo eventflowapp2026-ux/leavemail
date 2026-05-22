@@ -37,7 +37,7 @@ LeaveMail is a minimalist, accessibility-focused mobile web application that sim
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/leavemail.git
+git clone https://github.com/eventflowapp2026-ux/leavemail.git
 cd leavemail
 
 # Install dependencies
